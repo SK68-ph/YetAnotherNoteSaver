@@ -1,0 +1,125 @@
+﻿@page "/"
+@using YetAnotherNoteSaver.Models
+
+<PageTitle>YANS!</PageTitle>
+
+<div id="container" class="columns is-multiline mx-3">
+@foreach (var item in notes)
+{
+        <NoteItem note="@item" OnClickCallback="@RemoveNote"></NoteItem>
+}
+</div>
+
+<div class="modal @modal.Class" tabindex="-1" role="dialog" style="display:@modal.Display; overflow-y: auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <input type="text" id="title" placeholder="Note Title" class="modal-title" @bind="@modal.Title" @oninput="@((e) => { modal.Title=(string)e.Value;})">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="CloseModal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea name="" id="" cols="30" rows="10" placeholder="Note Description" @bind="@modal.NoteDescription" @oninput="@((e) => { modal.NoteDescription=(string)e.Value;})"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="AddNoteItem">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (modal.Backdrop)
+{
+        <div class="modal-backdrop fade show" style="z-index: 39;"></div>
+}
+
+
+<button class="float add-note" type="button" @onclick="OpenModal">
+        <i class="fa-solid fa-plus"></i>
+</button>
+
+@code {
+    // Todo- implement local storage
+    public List<NoteModel> notes = new List<NoteModel>();
+    private ModalModel modal = new ModalModel();
+    private string[] colors = { "green", "brown", "purple", "blue", "yellow", "orange" };
+
+   private void RemoveNote(Guid id)
+    {
+        for (int i = 0; i < notes.Count(); i++)
+        {
+            if (notes[i].Id == id)
+             {
+                notes.RemoveAt(i);
+             }
+        }
+    }
+
+    private void OpenModal(){
+        modal.Open();
+        StateHasChanged();
+    }
+    private void CloseModal(){
+        modal.Close();
+        StateHasChanged();
+    }
+
+    private void AddNoteItem(){
+        NoteModel note = new NoteModel()
+            {
+            Id = Guid.NewGuid(),
+            Title = modal.Title,
+            NoteDescription = modal.NoteDescription,
+            color = colors[Random.Shared.Next(0, colors.Length)]
+        };
+        notes.Add(note);
+        CloseModal();
+    }
+
+    private void AddNoteItem(string title,string notedescription,string notecolor){
+        NoteModel note = new NoteModel()
+            {
+            Title = title,
+            NoteDescription = notedescription,
+            color = notecolor
+        };
+        notes.Add(note);
+        CloseModal();
+    }
+private readonly Random _random = new Random();  
+public string RandomString(int size, bool lowerCase = false)  
+{  
+  var builder = new System.Text.StringBuilder(size);  
+  char offset = lowerCase ? 'a' : 'A';  
+  const int lettersOffset = 26;
+  
+  for (var i = 0; i < size; i++)  
+  {  
+   var @char = (char)_random.Next(offset, offset + lettersOffset);  
+   builder.Append(@char);  
+  }  
+  
+  return lowerCase ? builder.ToString().ToLower() : builder.ToString();  
+}  
+
+    protected override Task OnInitializedAsync()
+    {
+        for (int i = 0; i < 6; i++)
+        {
+                    NoteModel note = new NoteModel()
+            {
+            Id = Guid.NewGuid(),
+            Title = RandomString(Random.Shared.Next(15, 30)),
+            NoteDescription = RandomString(Random.Shared.Next(20, 100)),
+            color = colors[Random.Shared.Next(0, colors.Length)]
+            
+        };
+        notes.Add(note);
+        }
+        return base.OnInitializedAsync();
+    }
+
+}

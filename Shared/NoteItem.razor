@@ -1,0 +1,26 @@
+<div class="column content-card">
+        <div class="card-big-shadow">
+            <div class="card card-just-text" data-background="color" data-color=@note.color data-radius="none">
+                <div class="content">
+                    <h4 class="title">@note.Title</h4>
+                    <p class="description">@note.NoteDescription</p>
+                    <button @onclick="ChangePassword">Parent button</button>
+                </div>
+            </div> 
+        </div>
+    </div>
+
+
+@code { 
+    [Parameter]
+    public Models.NoteModel note { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnClickCallback {get; set;}
+        
+    private async Task ChangePassword()
+    {
+        await OnClickCallback.InvokeAsync(this.note.Id);
+    }
+
+}
