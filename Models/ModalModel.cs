@@ -4,6 +4,7 @@ namespace YetAnotherNoteSaver.Models
     {
         public string Display { get; set; } = "none;";
         public string Class { get; set; } = "";
+        public bool Edit { get; set; } = false;
         public bool Backdrop { get; set; } = false;
 
 

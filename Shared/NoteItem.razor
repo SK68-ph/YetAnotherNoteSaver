@@ -1,26 +1,40 @@
-<div class="column content-card">
-        <div class="card-big-shadow">
-            <div class="card card-just-text" data-background="color" data-color=@note.color data-radius="none">
-                <div class="content">
-                    <h4 class="title">@note.Title</h4>
-                    <p class="description">@note.NoteDescription</p>
-                    <button @onclick="ChangePassword">Parent button</button>
-                </div>
-            </div> 
+<div class="content-card" @onmouseover="MouseOver" @onmouseout="MouseOut" >
+    <div class="card-big-shadow">
+        <div class="card card-just-text" data-background="color" data-color=@note.color data-radius="none">
+            <i id="controls" @onclick="EditItem" class="edit-note fa-solid fa-pen-to-square fa-xl controls @ControlClass"></i>
+            <img id="controls" @onclick="RemoveItem" class="remove-note controls @ControlClass" src="/pin.png" alt="Close" width="35px" height="35px">
+            <div class="content">
+                <h4 class="title">@note.Title</h4>
+                <p class="description">@note.NoteDescription</p>
+            </div>
         </div>
     </div>
+</div>
 
 
-@code { 
+@code {
     [Parameter]
     public Models.NoteModel note { get; set; }
 
     [Parameter]
-    public EventCallback<Guid> OnClickCallback {get; set;}
-        
-    private async Task ChangePassword()
+    public EventCallback<Guid> OnRemoveItemCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnEditItemCallback { get; set; }
+
+    private async Task EditItem()
     {
-        await OnClickCallback.InvokeAsync(this.note.Id);
+        await OnEditItemCallback.InvokeAsync(this.note.Id);
     }
+
+    private async Task RemoveItem()
+    {
+        await OnRemoveItemCallback.InvokeAsync(this.note.Id);
+    }
+
+
+    string ControlClass { get; set; }
+    void MouseOver(MouseEventArgs e) { ControlClass="show-controls"; }
+    void MouseOut(MouseEventArgs e) { ControlClass=""; }
 
 }

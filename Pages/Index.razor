@@ -3,12 +3,13 @@
 
 <PageTitle>YANS!</PageTitle>
 
-<div id="container" class="columns is-multiline mx-3">
+<div class="contain">
 @foreach (var item in notes)
 {
-        <NoteItem note="@item" OnClickCallback="@RemoveNote"></NoteItem>
+        <NoteItem note="@item" OnEditItemCallback="@OpenEditModal" OnRemoveItemCallback="@RemoveNote"></NoteItem>
 }
 </div>
+
 
 <div class="modal @modal.Class" tabindex="-1" role="dialog" style="display:@modal.Display; overflow-y: auto;">
     <div class="modal-dialog modal-lg" role="document">
@@ -23,9 +24,17 @@
                 <textarea name="" id="" cols="30" rows="10" placeholder="Note Description" @bind="@modal.NoteDescription" @oninput="@((e) => { modal.NoteDescription=(string)e.Value;})"></textarea>
             </div>
             <div class="modal-footer">
+                @if (modal.Edit == false)
+                {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="AddNoteItem">
                     <span aria-hidden="true">&times;</span>
                 </button>
+                    
+                }else{
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Save" @onclick="EditNoteItem">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                }
             </div>
         </div>
     </div>
@@ -57,15 +66,49 @@
              }
         }
     }
+   private void EditNoteItem()
+    {
+        foreach (var item in notes)
+        {
+            if (modal.Id == item.Id)
+            {
+                item.Title = modal.Title;
+                item.NoteDescription = modal.NoteDescription;
+                CloseModal();
+            }
+        }
+    }
+   private void OpenEditModal(Guid id)
+    {
+        foreach (var item in notes)
+        {
+            if (item.Id == id)
+             {
+                modal.Id = id;
+                modal.Edit = true;
+                modal.Title = item.Title;
+                modal.NoteDescription = item.NoteDescription;
+                OpenModal();
+             }
+        }
+    }
 
     private void OpenModal(){
         modal.Open();
         StateHasChanged();
     }
+    
     private void CloseModal(){
         modal.Close();
+        modal = new ModalModel();
         StateHasChanged();
     }
+
+    private void OpenModal(string title){
+        modal.Open();
+        StateHasChanged();
+    }
+
 
     private void AddNoteItem(){
         NoteModel note = new NoteModel()
@@ -107,12 +150,13 @@ public string RandomString(int size, bool lowerCase = false)
 
     protected override Task OnInitializedAsync()
     {
-        for (int i = 0; i < 6; i++)
+        
+        for (int i = 0; i < 30; i++)
         {
                     NoteModel note = new NoteModel()
             {
             Id = Guid.NewGuid(),
-            Title = RandomString(Random.Shared.Next(15, 30)),
+            Title = $"My Sample Title No.{i}",
             NoteDescription = RandomString(Random.Shared.Next(20, 100)),
             color = colors[Random.Shared.Next(0, colors.Length)]
             
