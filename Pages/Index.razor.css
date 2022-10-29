@@ -18,6 +18,9 @@
     margin-top: 22px;
 }
 
+.modal-inputs{
+  width: 100%;
+}
 
 @media only screen and (max-width: 750px) {
     .contain{

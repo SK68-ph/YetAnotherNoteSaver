@@ -12,29 +12,25 @@
 
 
 <div class="modal @modal.Class" tabindex="-1" role="dialog" style="display:@modal.Display; overflow-y: auto;">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <input type="text" id="title" placeholder="Note Title" class="modal-title" @bind="@modal.Title" @oninput="@((e) => { modal.Title=(string)e.Value;})">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="CloseModal">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <input type="text" id="title" placeholder="Note Title" class="modal-title modal-inputs" @bind="@modal.Title" @oninput="@((e) => { modal.Title=(string)e.Value;})">
             </div>
             <div class="modal-body">
-                <textarea name="" id="" cols="30" rows="10" placeholder="Note Description" @bind="@modal.NoteDescription" @oninput="@((e) => { modal.NoteDescription=(string)e.Value;})"></textarea>
+                <textarea class="modal-inputs" cols="30" rows="10" placeholder="Note Description" @bind="@modal.NoteDescription" @oninput="@((e) => { modal.NoteDescription=(string)e.Value;})"></textarea>
             </div>
             <div class="modal-footer">
-                @if (modal.Edit == false)
-                {
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="AddNoteItem">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <div>
+                    <button @onclick="CloseModal" type="button" class="btn btn-secondary mx-3">Cancel</button>
+                    @if (modal.Edit == false)
+                    {
+                        <button @onclick="AddNoteItem" type="button" class="btn btn-primary">Submit</button>
                     
-                }else{
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Save" @onclick="EditNoteItem">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                }
+                    }else{
+                        <button @onclick="EditNoteItem" type="button" class="btn btn-success">Save</button>
+                    }
+                </div>
             </div>
         </div>
     </div>
