@@ -1,12 +1,15 @@
 ﻿@page "/"
+
+@using Newtonsoft.Json
 @using YetAnotherNoteSaver.Models
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <PageTitle>YANS!</PageTitle>
 
 <div class="contain">
 @foreach (var item in notes)
 {
-        <NoteItem note="@item" OnEditItemCallback="@OpenEditModal" OnRemoveItemCallback="@RemoveNote"></NoteItem>
+        <NoteItem note="@item" OnEditItemCallback="@EditModal" OnRemoveItemCallback="@RemoveNoteItem"></NoteItem>
 }
 </div>
 
@@ -50,42 +53,45 @@
     // Todo- implement local storage
     public List<NoteModel> notes = new List<NoteModel>();
     private ModalModel modal = new ModalModel();
-    private string[] colors = { "green", "brown", "purple", "blue", "yellow", "orange" };
 
-   private void RemoveNote(Guid id)
-    {
+    private int NoteIndex(Guid id){
         for (int i = 0; i < notes.Count(); i++)
         {
             if (notes[i].Id == id)
-             {
-                notes.RemoveAt(i);
-             }
-        }
-    }
-   private void EditNoteItem()
-    {
-        foreach (var item in notes)
-        {
-            if (modal.Id == item.Id)
             {
-                item.Title = modal.Title;
-                item.NoteDescription = modal.NoteDescription;
-                CloseModal();
+                return i;
             }
         }
+        return -1;
     }
-   private void OpenEditModal(Guid id)
+
+    private async Task RemoveNoteItem(Guid id)
     {
-        foreach (var item in notes)
-        {
-            if (item.Id == id)
-             {
-                modal.Id = id;
-                modal.Edit = true;
-                modal.Title = item.Title;
-                modal.NoteDescription = item.NoteDescription;
-                OpenModal();
-             }
+        int nID = NoteIndex(id);
+        if (nID >= 0){
+            notes.RemoveAt(nID);
+            await SyncNotesData();
+        }
+    }
+    private async Task EditNoteItem()
+    {
+        int nID = NoteIndex(modal.Id);
+        if (nID >= 0){
+            notes[nID].Title = modal.Title;
+            notes[nID].NoteDescription = modal.NoteDescription;
+            CloseModal();
+            await SyncNotesData();
+        }
+    }
+    private void EditModal(Guid id)
+    {
+        int nID = NoteIndex(id);
+        if (nID >= 0){
+            modal.Id = id;
+            modal.Edit = true;
+            modal.Title = notes[nID].Title;
+            modal.NoteDescription = notes[nID].NoteDescription;
+            OpenModal();
         }
     }
 
@@ -93,20 +99,22 @@
         modal.Open();
         StateHasChanged();
     }
-    
+
     private void CloseModal(){
         modal.Close();
         modal = new ModalModel();
         StateHasChanged();
     }
 
-    private void OpenModal(string title){
-        modal.Open();
-        StateHasChanged();
-    }
+    private async Task AddNoteItem(){
+        string[] colors = { "green", "brown", "purple", "blue", "yellow", "orange" };
+        
+        if (String.IsNullOrWhiteSpace(modal.Title))
+            modal.Title = "Untitled";
+            
+        if (String.IsNullOrWhiteSpace(modal.NoteDescription))
+            modal.NoteDescription = "Empty Description";
 
-
-    private void AddNoteItem(){
         NoteModel note = new NoteModel()
             {
             Id = Guid.NewGuid(),
@@ -115,51 +123,30 @@
             color = colors[Random.Shared.Next(0, colors.Length)]
         };
         notes.Add(note);
+        await SyncNotesData();
         CloseModal();
     }
 
-    private void AddNoteItem(string title,string notedescription,string notecolor){
-        NoteModel note = new NoteModel()
-            {
-            Title = title,
-            NoteDescription = notedescription,
-            color = notecolor
-        };
-        notes.Add(note);
-        CloseModal();
+    private async Task SyncNotesData(){
+        string output = JsonConvert.SerializeObject(notes);
+        await localStorage.SetItemAsStringAsync("notelist",output);
     }
-private readonly Random _random = new Random();  
-public string RandomString(int size, bool lowerCase = false)  
-{  
-  var builder = new System.Text.StringBuilder(size);  
-  char offset = lowerCase ? 'a' : 'A';  
-  const int lettersOffset = 26;
-  
-  for (var i = 0; i < size; i++)  
-  {  
-   var @char = (char)_random.Next(offset, offset + lettersOffset);  
-   builder.Append(@char);  
-  }  
-  
-  return lowerCase ? builder.ToString().ToLower() : builder.ToString();  
-}  
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        
-        for (int i = 0; i < 30; i++)
+        try
         {
-                    NoteModel note = new NoteModel()
+            string notesJson = await localStorage.GetItemAsStringAsync("notelist");
+            if (!string.IsNullOrEmpty(notesJson))
             {
-            Id = Guid.NewGuid(),
-            Title = $"My Sample Title No.{i}",
-            NoteDescription = RandomString(Random.Shared.Next(20, 100)),
-            color = colors[Random.Shared.Next(0, colors.Length)]
-            
-        };
-        notes.Add(note);
+                notes = JsonConvert.DeserializeObject<List<NoteModel>>(notesJson);
+            }
         }
-        return base.OnInitializedAsync();
+        catch (Exception)
+        {
+            Console.WriteLine("error reading 'name'");
+        }
+
     }
 
 }
