@@ -3,6 +3,7 @@
 @using Newtonsoft.Json
 @using YetAnotherNoteSaver.Models
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject HttpClient Http;
 
 <PageTitle>YANS!</PageTitle>
 
@@ -50,11 +51,11 @@
 </button>
 
 @code {
-    // Todo- implement local storage
+    // Todo- implement web api
     public List<NoteModel> notes = new List<NoteModel>();
     private ModalModel modal = new ModalModel();
 
-    private int NoteIndex(Guid id){
+    private int GetNoteIndex(Guid id){
         for (int i = 0; i < notes.Count(); i++)
         {
             if (notes[i].Id == id)
@@ -67,7 +68,7 @@
 
     private async Task RemoveNoteItem(Guid id)
     {
-        int nID = NoteIndex(id);
+        int nID = GetNoteIndex(id);
         if (nID >= 0){
             notes.RemoveAt(nID);
             await SyncNotesData();
@@ -75,7 +76,7 @@
     }
     private async Task EditNoteItem()
     {
-        int nID = NoteIndex(modal.Id);
+        int nID = GetNoteIndex(modal.Id);
         if (nID >= 0){
             notes[nID].Title = modal.Title;
             notes[nID].NoteDescription = modal.NoteDescription;
@@ -85,7 +86,7 @@
     }
     private void EditModal(Guid id)
     {
-        int nID = NoteIndex(id);
+        int nID = GetNoteIndex(id);
         if (nID >= 0){
             modal.Id = id;
             modal.Edit = true;
@@ -141,10 +142,12 @@
             {
                 notes = JsonConvert.DeserializeObject<List<NoteModel>>(notesJson);
             }
+            //var notess = await Http.GetFromJsonAsync<List<NoteModel>>("remote web server");
+            //notes = notess;
         }
         catch (Exception)
         {
-            Console.WriteLine("error reading 'name'");
+            Console.WriteLine("error reading data");
         }
 
     }
