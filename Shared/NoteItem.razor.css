@@ -1,9 +1,4 @@
-﻿.card-big-shadow {
-  max-width: 320px;
-  position: relative;
-}
-
-.coloured-cards .card {
+﻿.coloured-cards .card {
   margin-top: 30px;
 }
 
@@ -12,11 +7,6 @@
 }
 
 .card {
-  border-radius: 8px;
-  box-shadow: 0 2px 2px rgba(204, 197, 185, 0.5);
-  background-color: #ffffff;
-  color: #252422;
-  margin-bottom: 20px;
   position: relative;
   z-index: 1;
 }
@@ -57,21 +47,6 @@
   margin-bottom: 0px;
 }
 
-.card-big-shadow:before {
-  background-image: url("shadow.png");
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  bottom: -12%;
-  content: "";
-  display: block;
-  left: -12%;
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 0;
-}
-
 h4,
 .h4 {
   font-size: 1.5em;
@@ -98,8 +73,15 @@ h6,
 
 .content-card {
   margin: 20px;
+  max-width: 25%;
   display: inline-flex;
   flex-direction: row;
+}
+
+.card-shadow{
+  -webkit-box-shadow: 17px 13px 30px -2px rgba(0,0,0,0.75);
+  -moz-box-shadow: 17px 13px 30px -2px rgba(0,0,0,0.75);
+  box-shadow: 17px 13px 30px -2px rgba(0,0,0,0.75);
 }
 
 a:hover,
