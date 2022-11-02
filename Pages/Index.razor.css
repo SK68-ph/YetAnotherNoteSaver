@@ -1,62 +1,53 @@
-﻿
-
-.float {
-    z-index: 4;
-    position: fixed;
-    width: 60px;
-    height: 60px;
-    bottom: 40px;
-    right: 40px;
-    background-color: #0C9;
-    color: #FFF;
-    border-radius: 50px;
-    text-align: center;
-    box-shadow: 2px 2px 3px #999;
+﻿.float {
+  z-index: 4;
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  bottom: 40px;
+  right: 40px;
+  background-color: #0c9;
+  color: #fff;
+  border-radius: 50px;
+  text-align: center;
+  box-shadow: 2px 2px 3px #999;
 }
 
 .add-note {
-    margin-top: 22px;
+  margin-top: 22px;
 }
 
-.modal-inputs{
+.modal-inputs {
   width: 100%;
 }
 
-@media only screen and (max-width: 750px) {
-    .contain{
-      display: flex;
-      flex-direction: column;
-      margin-left: 15vw;
-    }
-  
-  }
+.contain {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: start;
+}
 
-@media only screen and (max-width: 1095px) and (min-width: 751px){
-    .contain{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-    }
-  
+@media only screen and (max-width: 749px) {
+  .contain {
+    display: flex;
+    flex-direction: column;
+    align-items:flex-start;
+    justify-content: space-evenly;
   }
+}
 
-  @media only screen and (max-width: 1200px) and (min-width: 1095px){
-    .contain{
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      align-items: center;
-      
-      justify-content: center;
-    }
-  
+@media only screen and (max-width: 1094px) and (min-width: 750px) {
+  .contain {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    margin-left: 5vw;
   }
+}
 
-  @media only screen and (max-width: 1552px) and (min-width: 1440px){
-    .contain{
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      align-items: center;
-      justify-content: center;
-    }
-  
+@media only screen and (max-width: 1500px) and (min-width: 1095px) {
+  .contain {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: start;
   }
+}
